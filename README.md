@@ -31,7 +31,7 @@
   </li>
   <li><strong>Cadastro de Clientes:</strong> Permite o cadastro de clientes da biblioteca, incluindo informações como nome, endereço e histórico de alugueis.
   </li>
-  <li><strong>Organização Eficiente:</strong> Proporciona uma estrutura para facilitar a busca, atualização e remoção de registros.
+  <li><strong>Gerenciamento de registros:</strong> Proporciona uma estrutura para facilitar a busca, atualização e remoção de registros.
   </li>
   <li><strong>Segurança e Autenticação:</strong> possibilita a autenticação, garantindo que apenas usuários autorizados possam acessar e modificar informações. (Em andamento)
   </li>
