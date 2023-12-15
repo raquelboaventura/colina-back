@@ -27,13 +27,13 @@
    <p>Principais Características:</p>
 <ul>
   <li><strong>Cadastro de Livros: </strong>A API facilita o registro de novos livros na biblioteca, fornecendo campos específicos para detalhes como título, autor, gênero e ISBN.</li>
-  <li><strong>Alugueis de Livros:</strong> Oferece a capacidade de gerenciar alugueis de livros, registrando informações sobre a data de retirada, data de devliução e cliente associado.
+  <li><strong>Alugueis de Livros:</strong> Oferece a capacidade de gerenciar alugueis de livros, registrando informações sobre a data de retirada, data de devliução e cliente associado. (Em andamento)
   </li>
   <li><strong>Cadastro de Clientes:</strong> Permite o cadastro de clientes da biblioteca, incluindo informações como nome, endereço e histórico de alugueis.
   </li>
-  <li><strong>Organização Eficiente:</strong> Proporciona uma estrutura organizada para facilitar a busca, atualização e remoção de registros, otimizando o gerenciamento da biblioteca.
+  <li><strong>Organização Eficiente:</strong> Proporciona uma estrutura para facilitar a busca, atualização e remoção de registros.
   </li>
-  <li><strong>Segurança e Autenticação:</strong> Implementa medidas de segurança para proteger dados sensíveis e possibilita a autenticação, garantindo que apenas usuários autorizados possam acessar e modificar informações.
+  <li><strong>Segurança e Autenticação:</strong> possibilita a autenticação, garantindo que apenas usuários autorizados possam acessar e modificar informações. (Em andamento)
   </li>
 </ul>
 
