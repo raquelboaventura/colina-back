@@ -56,6 +56,22 @@ public class LivroController {
     return null;
     }
 
+    @GetMapping("lista/{id}")
+    public ResponseEntity<LivroDTO> listaLivros(@PathVariable Long id){
+        try{
+            log.info("Entrando no controller de listagem de livro por ID {}", id);
+            log.info("Chamando o serviço de listagem por ID");
+            livroDTO = livroService.listaLivroPorId(id);
+            return ResponseEntity.status(200).body(livroDTO);
+        }
+        catch(Exception e)
+        {
+            log.error(e.getMessage());
+            log.error("Erro ao listar livros");
+        }
+        return ResponseEntity.status(200).body(livroDTO);
+    }
+
     @PutMapping("atualiza/{id}")
     public ResponseEntity<LivroDTO> atualizaLivro(@PathVariable Long id, @RequestBody LivroDTO livroDTO ){
         log.info("Entrando no controller de atualização de dados");
