@@ -18,7 +18,4 @@ public class Cliente {
     private Long id;
     private String nome;
     private Long cpf;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "endereco_id")
-    private Endereco endereco;
 }

@@ -1,9 +1,12 @@
 package com.example.colina.controller;
 
 import com.example.colina.Dto.ClienteDTO;
+import com.example.colina.Dto.LivroDTO;
+import com.example.colina.entity.Cliente;
 import com.example.colina.service.ClienteService;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -57,4 +60,31 @@ public class ClienteController {
             throw new RuntimeException(e);
         }
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ClienteDTO> atualizaClientePorId(@PathVariable Long id, @RequestBody Cliente cliente){
+        log.info("Entrando no controller de atualização de cliente");
+        try {
+            boolean status = clienteService.atualizaClientePorId(id, cliente);
+            if (status) return ResponseEntity.status(200).build();
+            else {
+                return ResponseEntity.status(204).build();
+            }
+        }
+    catch (Exception ex){
+        log.error("Erro ao atualizar os dados do livro. {}", ex.getMessage());
+    }
+        return ResponseEntity.status(204).build();
 }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ClienteDTO> deletaClientePorId(@PathVariable Long id){
+        log.info("Controller de exclusão de registro de cliente.");
+        boolean status = clienteService.deletaRegistroClientePorId(id);
+        if (status) {
+            return ResponseEntity.status(200).build(); // Atualização bem-sucedida
+        } else {
+            return ResponseEntity.status(204).build(); // Nenhuma alteração necessária
+        }
+        }
+    }

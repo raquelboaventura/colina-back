@@ -35,7 +35,7 @@ public class ClienteService {
     }
 
     public ClienteDTO listarClientePorId(Long id) {
-        try{
+        try {
             log.info("Entrando no serviço de busca de cliente por id: {}", id);
             Optional<Cliente> cliente = clienteRepository.findById(id);
             ClienteDTO clienteDTO = new ClienteDTO();
@@ -49,7 +49,7 @@ public class ClienteService {
     }
 
     public List<ClienteDTO> listarClientes() {
-        try{
+        try {
             List<ClienteDTO> listaClientesDTO;
             log.info("Entrando no serviço de listagem de clientes");
             List<Cliente> listaClientes = clienteRepository.findAll();
@@ -57,7 +57,7 @@ public class ClienteService {
                     .map(this::mapClienteToDTO)
                     .collect(Collectors.toList());
             return listaClientesDTO;
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -67,9 +67,59 @@ public class ClienteService {
         clienteDTO.setId(cliente.getId());
         clienteDTO.setNome(cliente.getNome());
         clienteDTO.setCpf(cliente.getCpf());
-        clienteDTO.setEndereco(cliente.getEndereco());
 
         return clienteDTO;
     }
+
+    public boolean atualizaClientePorId(Long id, Cliente dadosAtualizados) {
+        // Verifica se o cliente existe com o ID fornecido
+        Optional<Cliente> clienteExistente = clienteRepository.findById(id);
+        if (clienteExistente.isEmpty()) {
+            return false; // Cliente não encontrado
+        }
+
+        // Verifica se o CPF fornecido corresponde ao cliente existente
+        if (!clienteExistente.get().getCpf().equals(dadosAtualizados.getCpf())) {
+            return false; // CPF não corresponde ao cliente
+        }
+
+        // Verifica se há necessidade de atualização
+        boolean precisaAtualizar = false;
+
+        // Atualiza o nome se for diferente
+        if (!clienteExistente.get().getNome().equals(dadosAtualizados.getNome())) {
+            clienteExistente.get().setNome(dadosAtualizados.getNome());
+            precisaAtualizar = true;
+        }
+
+        // Atualiza o CPF se for diferente
+        if (!clienteExistente.get().getCpf().equals(dadosAtualizados.getCpf())) {
+            clienteExistente.get().setCpf(dadosAtualizados.getCpf());
+            precisaAtualizar = true;
+        }
+
+        if (precisaAtualizar) {
+            // Salva as atualizações no repositório
+            clienteRepository.save(clienteExistente.get());
+        }
+
+        return precisaAtualizar;
+        }
+
+    public boolean deletaRegistroClientePorId(Long id) {
+        try {
+            Optional<Cliente> cliente = clienteRepository.findById(id);
+            boolean status = false;
+            if (cliente.isPresent()) {
+                clienteRepository.deleteById(id);
+                status = true;
+            }
+            return status;
+        } catch (Exception ex) {
+            log.error("Erro ao deletar cliente: ", ex);
+            throw ex;
+        }
     }
+}
+
 
