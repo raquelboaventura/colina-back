@@ -58,7 +58,7 @@ public class LivroService {
 
     public LivroDTO listaLivroPorId(Long id) {
         try{
-            LivroDTO livroDTO = new LivroDTO();
+            LivroDTO livroDTO;
             log.info("Entrando no servico de listagem por ID");
             Optional<Livro> livroRetornado = livroRepository.findById(id);
             log.info("Retornado livro via bd: {}", livroRetornado);
@@ -72,34 +72,63 @@ public class LivroService {
     }
 
 
-    public void atualizaLivro(LivroDTO livroDTO, Long id) {
+    public boolean atualizaLivro(LivroDTO livroDTO, Long id) {
 
         log.info("Entrando no serviço de atualização");
         try {
             log.info("livroDTO: {} ", livroDTO);
             log.info("Gravando os dados no banco de dados...");
-            livroRepository.findById(id).
-                    map(livro -> {
-                        livro.setPreco(livroDTO.getPreco());
-                        livro.setQuantidade(livroDTO.getQuantidade());
-                        livro.setIsbn(livroDTO.getIsbn());
-                        livro.setTitulo(livroDTO.getTitulo());
-                        log.info("Livro atualizado, salvando no banco de dados...");
-                        return livroRepository.save(livro);
-                    })
-                    .orElseGet(() -> {
-                                log.info("Valores nulos? Entrou no Else Get!");
-                                livroDTO.setId(id);
-                                Livro livro = new Livro();
-                                BeanUtils.copyProperties(livroDTO, livro);
-                                return livroRepository.save(livro);
-                            }
-                    );
+            Optional<Livro> id_existe = livroRepository.findById(id);
+            if (id_existe.isPresent()) {
+                log.info("o ID existe: {}", id_existe);
+                Livro livroExistente = id_existe.get();
+                if (id_existe.get().getIsbn().equals(livroDTO.getIsbn())) {
+                    log.info("ISBN válido, atualizando o livro...");
+
+                    // Atualiza os campos necessários
+                    if (livroDTO.getTitulo() != null) {
+                        livroExistente.setTitulo(livroDTO.getTitulo());
+                    }
+                    if (livroDTO.getAutor() != null) {
+                        livroExistente.setAutor(livroDTO.getAutor());
+                    }
+                    if (livroDTO.getEditora() != null) {
+                        livroExistente.setEditora(livroDTO.getEditora());
+                    }
+                    if (livroDTO.getPaginas() != 0) {
+                        livroExistente.setPaginas(livroDTO.getPaginas());
+                    }
+                    if (livroDTO.getPublicacao() != null) {
+                        livroExistente.setPublicacao(livroDTO.getPublicacao());
+                    }
+                    if (livroDTO.getPreco() != 0) {
+                        livroExistente.setPreco(livroDTO.getPreco());
+                    }
+                    if (livroDTO.getGenero() != null) {
+                        livroExistente.setGenero(livroDTO.getGenero());
+                    }
+                    if (livroDTO.getQuantidade() != 0) {
+                        livroExistente.setQuantidade(livroDTO.getQuantidade());
+                    }
+
+                    log.info("Livro DTO: {}", livroDTO);
+                    log.info("Livro atualizado, salvando no banco de dados...{}", livroExistente);
+                    livroRepository.save(livroExistente);
+                    return true;
+                } else {
+                    log.warn("O ISBN fornecido ({}) não corresponde ao livro encontrado ({}). Atualização cancelada.", livroDTO.getIsbn(), livroExistente.getIsbn());
+                    return false;
+                }
+            }
+            else{
+                    log.info(" o ID não existe: {}", id_existe);
+                }
+
         } catch (Exception ex) {
             log.error(ex.getMessage());
             throw new RuntimeException(ex);
         }
-
+        return false;
     }
 
     public List<LivroDTO> converteListaEmDTO(List<Livro> livros) {
