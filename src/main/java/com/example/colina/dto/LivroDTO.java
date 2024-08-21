@@ -1,4 +1,4 @@
-package com.example.colina.DTO;
+package com.example.colina.Dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
