@@ -53,57 +53,93 @@
     <p>Explicação sobre como autenticar as requisições à API, se necessário.</p>-->
    
     
-   <h2 id="endpoints">5. Endpoints</h2>
-    <p>Lista dos endpoints disponíveis, junto com suas descrições e parâmetros.</p>
-    <table>
-        <thead>
-            <tr>
-                <th>Método</th>
-                <th>Endpoint</th>
-                <th>Descrição</th>
-                <th>Parâmetros</th>
-                <th>Exemplo de Resposta</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>GET</td>
-                <td>/livros/lista/all</td>
-                <td>Obter todos os livros</td>
-                <td>Nenhum</td>
-                <td>{ "livros": [...] }</td>
-            </tr>
-            <tr>
-                <td>GET</td>
-                <td>livros/atualiza/{id}</td>
-                <td>Obter detalhes de um livro específico</td>
-                <td>{ "id": "123" }</td>
-                <td>{ "livro": { "id": "123", "titulo": "Título do Livro", ... } }</td>
-            </tr>
-            <tr>
-                <td>POST</td>
-                <td>/livros/cadastro</td>
-                <td>Adicionar um novo livro</td>
-                <td>{  "isbn": 0,"titulo": "Ensinando a transgredir: A educação como prática da liberdade","autor": "bell hooks","editora": "Editora WMF Martins Fontes","paginas": 288,"publicacao": "2023-12-01 15:36:25","preco": 49.90,"genero": "sociedade","quantidade": 10
-}</td>
-                <td>"mensagem": "Livro adicionado com sucesso"</td>
-           </tr>
-           <tr>
-                <td>PUT</td>
-                <td>livros/atualiza/{id}</td>
-                <td>Alterar detalhes de um livro específico</td>
-                <td>{ "id": "123" }</td>
-                <td>{ "livro": { "id": "123", "titulo": "Título do Livro", ... } }</td>
-            </tr>
-            <tr>
-                <td>PUT</td>
-                <td>livros/delete/{id}</td>
-                <td>Excluir um livro específico</td>
-                <td>{ "id": "123" }</td>
-                <td>"mensagem": "Livro excluído com sucesso"</td>
-            </tr>
-        </tbody>
-    </table>
+<h2 id="endpoints">5. Endpoints</h2>
+<p>Lista dos endpoints disponíveis, junto com suas descrições e parâmetros.</p>
+<table>
+    <thead>
+        <tr>
+            <th>Método</th>
+            <th>Endpoint</th>
+            <th>Descrição</th>
+            <th>Parâmetros</th>
+            <th>Exemplo de Resposta</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Livros Endpoints -->
+        <tr>
+            <td>GET</td>
+            <td>/livros/lista/all</td>
+            <td>Obter todos os livros</td>
+            <td>Nenhum</td>
+            <td>{ "livros": [...] }</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/livros/atualiza/{id}</td>
+            <td>Obter detalhes de um livro específico</td>
+            <td>{ "id": "123" }</td>
+            <td>{ "livro": { "id": "123", "titulo": "Título do Livro", ... } }</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/livros/cadastro</td>
+            <td>Adicionar um novo livro</td>
+            <td>{ "isbn": 0, "titulo": "Ensinando a transgredir: A educação como prática da liberdade", "autor": "bell hooks", "editora": "Editora WMF Martins Fontes", "paginas": 288, "publicacao": "2023-12-01 15:36:25", "preco": 49.90, "genero": "sociedade", "quantidade": 10 }</td>
+            <td>{ "mensagem": "Livro adicionado com sucesso" }</td>
+        </tr>
+        <tr>
+            <td>PUT</td>
+            <td>/livros/atualiza/{id}</td>
+            <td>Alterar detalhes de um livro específico</td>
+            <td>{ "id": "123" }</td>
+            <td>{ "livro": { "id": "123", "titulo": "Título do Livro", ... } }</td>
+        </tr>
+        <tr>
+            <td>DELETE</td>
+            <td>/livros/delete/{id}</td>
+            <td>Excluir um livro específico</td>
+            <td>{ "id": "123" }</td>
+            <td>{ "mensagem": "Livro excluído com sucesso" }</td>
+        </tr>
+        <!-- Clientes Endpoints -->
+        <tr>
+            <td>GET</td>
+            <td>/clientes/lista/all</td>
+            <td>Obter todos os clientes</td>
+            <td>Nenhum</td>
+            <td>{ "clientes": [...] }</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/clientes/{id}</td>
+            <td>Obter detalhes de um cliente específico</td>
+            <td>{ "id": "123" }</td>
+            <td>{ "cliente": { "id": "123", "nome": "João Silva", "cpf": 12345678901 } }</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/clientes/cadastro</td>
+            <td>Adicionar um novo cliente</td>
+            <td>{ "nome": "Maria Oliveira", "cpf": 98765432100 }</td>
+            <td>{ "mensagem": "Cliente adicionado com sucesso" }</td>
+        </tr>
+        <tr>
+            <td>PUT</td>
+            <td>/clientes/atualiza/{id}</td>
+            <td>Alterar detalhes de um cliente específico</td>
+            <td>{ "id": "123", "nome": "Novo Nome", "cpf": 12345678901 }</td>
+            <td>{ "cliente": { "id": "123", "nome": "Novo Nome", "cpf": 12345678901 } }</td>
+        </tr>
+        <tr>
+            <td>DELETE</td>
+            <td>/clientes/delete/{id}</td>
+            <td>Excluir um cliente específico</td>
+            <td>{ "id": "123" }</td>
+            <td>{ "mensagem": "Cliente excluído com sucesso" }</td>
+        </tr>
+    </tbody>
+</table>
 
  <!--  <h2 id="respostas-comuns">6. Respostas Comuns</h2>
     <p>Exemplos de respostas comuns que os usuários podem esperar ao interagir com a API.</p>
