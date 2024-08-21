@@ -1,6 +1,6 @@
 package com.example.colina.service;
 
-import com.example.colina.DTO.LivroDTO;
+import com.example.colina.Dto.LivroDTO;
 import com.example.colina.entity.Livro;
 import com.example.colina.repository.LivroRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;

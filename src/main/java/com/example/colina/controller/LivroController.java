@@ -1,6 +1,6 @@
 package com.example.colina.controller;
 
-import com.example.colina.DTO.LivroDTO;
+import com.example.colina.Dto.LivroDTO;
 import com.example.colina.service.LivroService;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
