@@ -77,12 +77,20 @@ public class LivroController {
         log.info("Entrando no controller de atualização de dados");
         try {
             log.info("Chamando serviço de atualização");
-            livroService.atualizaLivro(livroDTO, id);
+            Boolean status = livroService.atualizaLivro(livroDTO, id);
             log.info("Voltando ao controller");
+            if (status) {
+                return ResponseEntity.status(200).build();
+            }
+            else{
+                return ResponseEntity.status(204).build();
+            }
+
+
         }catch (Exception ex){
             log.error("Erro ao atualizar os dados do livro. {}", ex.getMessage());
         }
-        return ResponseEntity.status(200).body(livroDTO);
+        return ResponseEntity.status(204).build();
     }
 
     @PutMapping("delete/{id}")
