@@ -37,16 +37,16 @@ public class ClienteController {
     }
 
     @GetMapping
-    public ResponseEntity<ClienteDTO> listarClientePorId(@RequestParam Long id){
-        try{
+    public ResponseEntity<ClienteDTO> listarClientePorId(@RequestParam Long id) {
+        ClienteDTO clienteRetorno = null;
+        try {
             log.info("Entrando no controller de busca de cliente por id");
-            ClienteDTO clienteRetorno = clienteService.listarClientePorId(id);
+            clienteRetorno = clienteService.listarClientePorId(id);
             return ResponseEntity.status(200).body(clienteRetorno);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             log.info("deu erro ao listar cliente por ID: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(clienteRetorno);
         }
-        return null;
     }
 
 
