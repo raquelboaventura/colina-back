@@ -22,6 +22,7 @@ public class LivroController {
     private LivroDTO livroDTO;
 
     @PostMapping("/cadastro")
+    @CrossOrigin(origins = "http://127.0.0.1:5500")
     @Transactional
     public ResponseEntity<LivroDTO> cadastraLivro(@RequestBody LivroDTO livroDTO){
         try{

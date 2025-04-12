@@ -64,7 +64,7 @@ public class ClienteService {
 
     private ClienteDTO mapClienteToDTO(Cliente cliente) {
         ClienteDTO clienteDTO = new ClienteDTO();
-        clienteDTO.setId(cliente.getId());
+        clienteDTO.setId_cliente(cliente.getId_cliente());
         clienteDTO.setNome(cliente.getNome());
         clienteDTO.setCpf(cliente.getCpf());
 
