@@ -1,12 +1,9 @@
 package com.example.colina.Dto;
 
-import com.example.colina.entity.Emprestimo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -22,5 +19,4 @@ public class LivroDTO {
     private String genero;
     private int quantidade;
     private boolean status = true;
-    private List<Emprestimo> emprestimos = new ArrayList<>();
 }
