@@ -18,10 +18,8 @@ import java.util.Objects;
 @AllArgsConstructor
 public class Livro {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_livro")
-    private Long id_livro;
-    private Long isbn;
+    private String isbn;
     private String titulo;
     private String autor;
     private String editora;
@@ -32,7 +30,4 @@ public class Livro {
     private int quantidade;
     @Column(columnDefinition = "boolean default true")
     private boolean status = true;
-    @ToString.Exclude
-    @ManyToMany(mappedBy = "livros")
-    private List<Emprestimo> emprestimos = new ArrayList<>();
 }

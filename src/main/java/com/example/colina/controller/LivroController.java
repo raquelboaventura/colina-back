@@ -58,7 +58,7 @@ public class LivroController {
     }
 
     @GetMapping("lista/{id}")
-    public ResponseEntity<LivroDTO> listaLivros(@PathVariable Long id){
+    public ResponseEntity<LivroDTO> listaLivros(@PathVariable String id){
         try{
             log.info("Entrando no controller de listagem de livro por ID {}", id);
             log.info("Chamando o serviço de listagem por ID");
@@ -74,7 +74,7 @@ public class LivroController {
     }
 
     @PutMapping("atualiza/{id}")
-    public ResponseEntity<LivroDTO> atualizaLivro(@PathVariable Long id, @RequestBody LivroDTO livroDTO ){
+    public ResponseEntity<LivroDTO> atualizaLivro(@PathVariable String id, @RequestBody LivroDTO livroDTO ){
         log.info("Entrando no controller de atualização de dados");
         try {
             log.info("Chamando serviço de atualização");
@@ -95,7 +95,7 @@ public class LivroController {
     }
 
     @PutMapping("delete/{id}")
-    public void excluiLivro(@PathVariable Long id){
+    public void excluiLivro(@PathVariable String id){
         log.info("Entrando no controller de exclusão");
         try{
             log.info("Chamando serviço de exclusão");

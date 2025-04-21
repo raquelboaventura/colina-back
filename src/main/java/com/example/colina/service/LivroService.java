@@ -56,7 +56,7 @@ public class LivroService {
         return null;
     }
 
-    public LivroDTO listaLivroPorId(Long id) {
+    public LivroDTO listaLivroPorId(String id) {
         try{
             LivroDTO livroDTO;
             log.info("Entrando no servico de listagem por ID");
@@ -72,7 +72,7 @@ public class LivroService {
     }
 
 
-    public boolean atualizaLivro(LivroDTO livroDTO, Long id) {
+    public boolean atualizaLivro(LivroDTO livroDTO, String id) {
 
         log.info("Entrando no serviço de atualização");
         try {
@@ -147,7 +147,7 @@ public class LivroService {
         return livrosDTO;
     }
 
-    public void excluiLivro(Long id) {
+    public void excluiLivro(String id) {
         log.info("Entrando no serviço de exclusão de livro");
         try {
             livroRepository.findById(id)

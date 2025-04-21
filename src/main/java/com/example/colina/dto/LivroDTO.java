@@ -12,8 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LivroDTO {
-    private Long id_livro;
-    private Long isbn;
+    private String isbn;
     private String titulo;
     private String autor;
     private String editora;
