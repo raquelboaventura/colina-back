@@ -15,8 +15,11 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.management.BadAttributeValueExpException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,14 +54,14 @@ public class EmprestimoService {
             log.info("Iniciando cadastro de empréstimo - DTO recebido: {}", dto);
 
             List<Livro> livros = dto.getLivros().stream()
-                    .map(l -> livroRepository.findById(l.getId_livro())
-                            .orElseThrow(() -> new RuntimeException("Livro não encontrado: " + l.getId_livro())))
+                    .map(l -> livroRepository.findById(l.getIsbn())
+                            .orElseThrow(() -> new RuntimeException("Livro não encontrado: " + l.getIsbn())))
                     .collect(Collectors.toList());
 
 
             // Log da validação do cliente
-            log.debug("Validando cliente com ID: {}", dto.getCliente().getId_cliente());
-            Cliente cliente = validarCliente(dto.getCliente().getId_cliente());
+            log.debug("Validando cliente com ID: {}", dto.getCliente().getCpf());
+            Cliente cliente = validarCliente(dto.getCliente().getCpf());
             log.debug("Cliente validado: {}", cliente);
 
             // Log da validação dos livros
@@ -103,12 +106,21 @@ public class EmprestimoService {
         return LocalDate.now().plusDays(7);
     }
 
-    private Cliente validarCliente(Long clienteId) {
+    private Cliente validarCliente(String clienteId) {
         return clienteRepository.findById(clienteId)
                 .orElseThrow();
     }
 
-    private List<Livro> validarLivros(List<Long> livrosIds) {
+    public List<EmprestimoDTO> listaEmprestimos(){
+        try {
+            return emprestimoRepository.findAll().stream().map(this::converterParaDTO).collect(Collectors.toList());
+        } catch (Exception e){
+            log.error("Erro ao listar emprestimos: {}", e);
+            throw e;
+        }
+    }
+
+    private List<Livro> validarLivros(List<String> livrosIds) {
         return livrosIds.stream()
                 .map(id -> livroRepository.findById(id)
                         .orElseThrow())
@@ -116,7 +128,7 @@ public class EmprestimoService {
     }
 
     private void validarLimiteEmprestimos(Cliente cliente) throws LimiteEmprestimosExcedidoException {
-        int quantidadeEmprestimosAtivos = (int) emprestimoRepository.contarEmprestimosPorCliente(cliente.getId_cliente());
+        int quantidadeEmprestimosAtivos = (int) emprestimoRepository.contarEmprestimosPorCliente(cliente.getCpf());
 
         if (quantidadeEmprestimosAtivos >= 5) {
             throw new LimiteEmprestimosExcedidoException(
@@ -141,5 +153,60 @@ public class EmprestimoService {
         dto.setDataDevolucaoPrevista(emprestimo.getDataDevolucaoPrevista());
         dto.setStatus(emprestimo.getStatus());
         return dto;
+    }
+
+    public Boolean renovarEmprestimo(EmprestimoDTO emprestimoDTO) {
+        try {
+            Optional<Emprestimo> emprestimoExiste = emprestimoRepository.findById(emprestimoDTO.getId_emprestimo());
+            if (emprestimoExiste.isPresent()) {
+                log.info("ID encontrado. Emprestimo será atualizado...");
+                if (emprestimoDTO.getDataDevolucaoPrevista() != null) {
+                    emprestimoExiste.get().setDataDevolucaoPrevista(getDataDevolucaoPrevista());
+                }
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e){
+            log.error("Erro ao listar emprestimos: {}", e);
+            throw e;
+        }
+    }
+
+    public Boolean concluirEmprestimo(EmprestimoDTO emprestimoDTO){
+        try{
+            Optional<Emprestimo> emprestimo = emprestimoRepository.findById(emprestimoDTO.getId_emprestimo());
+            if (emprestimo.isPresent()){
+                emprestimo.get().setStatus(StatusEmprestimo.CONCLUIDO);
+                return true;
+            }
+            else {
+                return false;
+            }
+        } catch(Exception e){
+            log.error("Erro ao concluirEmprestimo: {}", e);
+            throw e;
+        }
+    }
+
+    public EmprestimoDTO verificarEmprestimo(EmprestimoDTO emprestimoDTO) throws BadAttributeValueExpException {
+        try{
+            Optional<Emprestimo> emprestimo = emprestimoRepository.findById(emprestimoDTO.getId_emprestimo());
+            if (emprestimo.isPresent()){
+                if (emprestimo.get().getDataDevolucaoPrevista() == LocalDate.now().plusDays(1)){
+                    emprestimo.get().setStatus(StatusEmprestimo.ATRASADO);
+                    emprestimoDTO = converterParaDTO(emprestimo.get());
+                    return emprestimoDTO;
+                    } else{
+                        return emprestimoDTO;
+                    }
+            } else {
+                throw new BadAttributeValueExpException("Valor do ID inválido!");
+                }
+
+        } catch(Exception e){
+            log.error("Erro ao verificarEmprestimo: {}", e);
+            throw e;
+        }
     }
 }
