@@ -14,10 +14,9 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Cliente {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_cliente")
-    private Long id_cliente;
-    private String nome;
-    @Column(unique = true, nullable = false, length = 11)
+    @Column(name = "id_cliente",nullable = false, length = 11)
     private String cpf;
+    private String nome;
+
+
 }

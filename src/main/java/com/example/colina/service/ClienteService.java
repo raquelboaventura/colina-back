@@ -34,7 +34,7 @@ public class ClienteService {
         }
     }
 
-    public ClienteDTO listarClientePorId(Long id) {
+    public ClienteDTO listarClientePorId(String id) {
         try {
             log.info("Entrando no serviço de busca de cliente por id: {}", id);
             Optional<Cliente> cliente = clienteRepository.findById(id);
@@ -64,14 +64,14 @@ public class ClienteService {
 
     private ClienteDTO mapClienteToDTO(Cliente cliente) {
         ClienteDTO clienteDTO = new ClienteDTO();
-        clienteDTO.setId_cliente(cliente.getId_cliente());
+        clienteDTO.setCpf(cliente.getCpf());
         clienteDTO.setNome(cliente.getNome());
         clienteDTO.setCpf(cliente.getCpf());
 
         return clienteDTO;
     }
 
-    public boolean atualizaClientePorId(Long id, Cliente dadosAtualizados) {
+    public boolean atualizaClientePorId(String id, Cliente dadosAtualizados) {
         // Verifica se o cliente existe com o ID fornecido
         Optional<Cliente> clienteExistente = clienteRepository.findById(id);
         if (clienteExistente.isEmpty()) {
@@ -106,7 +106,7 @@ public class ClienteService {
         return precisaAtualizar;
         }
 
-    public boolean deletaRegistroClientePorId(Long id) {
+    public boolean deletaRegistroClientePorId(String id) {
         try {
             Optional<Cliente> cliente = clienteRepository.findById(id);
             boolean status = false;

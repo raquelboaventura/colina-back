@@ -37,7 +37,7 @@ public class ClienteController {
     }
 
     @GetMapping
-    public ResponseEntity<ClienteDTO> listarClientePorId(@RequestParam Long id) {
+    public ResponseEntity<ClienteDTO> listarClientePorId(@RequestParam String id) {
         ClienteDTO clienteRetorno = null;
         try {
             log.info("Entrando no controller de busca de cliente por id");
@@ -62,7 +62,7 @@ public class ClienteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ClienteDTO> atualizaClientePorId(@PathVariable Long id, @RequestBody Cliente cliente){
+    public ResponseEntity<ClienteDTO> atualizaClientePorId(@PathVariable String id, @RequestBody Cliente cliente){
         log.info("Entrando no controller de atualização de cliente");
         try {
             boolean status = clienteService.atualizaClientePorId(id, cliente);
@@ -78,7 +78,7 @@ public class ClienteController {
 }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ClienteDTO> deletaClientePorId(@PathVariable Long id){
+    public ResponseEntity<ClienteDTO> deletaClientePorId(@PathVariable String id){
         log.info("Controller de exclusão de registro de cliente.");
         boolean status = clienteService.deletaRegistroClientePorId(id);
         if (status) {
