@@ -1,6 +1,7 @@
 package com.example.colina.controller;
 
 import com.example.colina.Dto.EmprestimoDTO;
+import com.example.colina.Dto.EmprestimoDetalhadoDTO;
 import com.example.colina.exceptions.LimiteEmprestimosExcedidoException;
 import com.example.colina.exceptions.LivroIndisponivelException;
 import com.example.colina.service.EmprestimoService;
@@ -67,6 +68,16 @@ public class EmprestimoController {
         } catch (Exception e) {
             log.error("Erro ao deletar logicamente emprestimo: {}", e.getMessage());
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/detalhado/{id}")
+    public ResponseEntity<EmprestimoDetalhadoDTO> buscarEmprestimoDetalhadoPorId(@PathVariable Long id) {
+        try {
+            EmprestimoDetalhadoDTO dto = emprestimoService.buscarEmprestimoDetalhadoPorId(id);
+            return ResponseEntity.ok(dto);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
         }
     }
 }

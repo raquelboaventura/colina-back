@@ -1,6 +1,7 @@
 package com.example.colina.service;
 
 import com.example.colina.Dto.EmprestimoDTO;
+import com.example.colina.Dto.EmprestimoDetalhadoDTO;
 import com.example.colina.entity.Cliente;
 import com.example.colina.entity.Emprestimo;
 import com.example.colina.entity.Livro;
@@ -40,64 +41,45 @@ public class EmprestimoService {
         this.livroService = livroService;
     }
 
-    /**
-     * Cadastra um novo empréstimo com múltiplos livros
-     */
     public EmprestimoDTO cadastrarEmprestimo(EmprestimoDTO dto)
-            throws LivroIndisponivelException,
-            LimiteEmprestimosExcedidoException {
-        // Log inicial com informações do DTO recebido
-        try{
-            log.info("Iniciando cadastro de empréstimo - DTO recebido: {}", dto);
+        throws LivroIndisponivelException, LimiteEmprestimosExcedidoException {
+    try {
+        log.info("Iniciando cadastro de empréstimo - DTO recebido: {}", dto);
 
-            List<Livro> livros = dto.getLivros().stream()
-                    .map(l -> livroRepository.findById(l.getId_livro())
-                            .orElseThrow(() -> new RuntimeException("Livro não encontrado: " + l.getId_livro())))
-                    .collect(Collectors.toList());
+        // Buscar cliente pelo id_cliente
+        Cliente cliente = clienteRepository.findById(dto.getId_cliente())
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado: " + dto.getId_cliente()));
 
+        // Buscar livros pelos ids
+        List<Livro> livros = dto.getLivrosIds().stream()
+                .map(id -> livroRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Livro não encontrado: " + id)))
+                .collect(Collectors.toList());
 
-            // Log da validação do cliente
-            log.debug("Validando cliente com ID: {}", dto.getCliente().getId_cliente());
-            Cliente cliente = validarCliente(dto.getCliente().getId_cliente());
-            log.debug("Cliente validado: {}", cliente);
+        // Validar limite e disponibilidade
+        validarLimiteEmprestimos(cliente);
+        validarDisponibilidadeLivros(livros);
 
-            // Log da validação dos livros
-            log.debug("Validando {} livros", livros.size());
-            validarDisponibilidadeLivros(livros);
-            log.debug("Todos os livros foram validados com sucesso");
+        // Criar e salvar o empréstimo
+        Emprestimo emprestimo = Emprestimo.builder()
+                .cliente(cliente)
+                .livros(livros)
+                .dataEmprestimo(dto.getDataEmprestimo() != null ? dto.getDataEmprestimo() : LocalDate.now())
+                .dataDevolucaoPrevista(dto.getDataDevolucaoPrevista() != null ? dto.getDataDevolucaoPrevista() : getDataDevolucaoPrevista())
+                .dataDevolucaoReal(dto.getDataDevolucaoReal())
+                .status(dto.getStatus() != null ? dto.getStatus() : StatusEmprestimo.ATIVO)
+                .build();
 
-            // Log da validação do limite
-            log.debug("Validando limite de empréstimos do cliente");
-            validarLimiteEmprestimos(cliente);
-            log.debug("Limite de empréstimos validado");
+        Emprestimo salvo = emprestimoRepository.save(emprestimo);
 
-            // Log da criação do empréstimo
-            log.debug("Criando novo empréstimo");
-            Emprestimo emprestimo = new Emprestimo();
-            emprestimo.setCliente(cliente);
-            emprestimo.setLivros(livros);
-            emprestimo.setDataEmprestimo(LocalDate.now());
-            emprestimo.setDataDevolucaoPrevista(this.getDataDevolucaoPrevista());
-            emprestimo.setStatus(StatusEmprestimo.ATIVO);
-            log.debug("Emprestimo criado: {}", emprestimo);
+        // Retornar DTO preenchido
+        return converterParaDTO(salvo);
 
-            // Log da persistência
-            log.info("Persistindo empréstimo no banco de dados");
-            emprestimoRepository.save(emprestimo);
-            log.info("Emprestimo persistido com sucesso");
-
-            // Log da conversão e retorno
-            log.debug("Convertendo empréstimo para DTO");
-            EmprestimoDTO dtoRetorno = converterParaDTO(emprestimo);
-            log.info("Cadastro de empréstimo concluído com sucesso");
-
-            return dtoRetorno;
-        }
-        catch(Exception e){
-            log.error("Erro ao cadastrar emprestimo: {}", e);
-            throw e;
-        }
+    } catch (Exception e) {
+        log.error("Erro ao cadastrar emprestimo: {}", e);
+        throw e;
     }
+}
 
     private LocalDate getDataDevolucaoPrevista() {
         return LocalDate.now().plusDays(7);
@@ -135,8 +117,10 @@ public class EmprestimoService {
     private EmprestimoDTO converterParaDTO(Emprestimo emprestimo) {
         EmprestimoDTO dto = new EmprestimoDTO();
         dto.setId_emprestimo(emprestimo.getId_emprestimo());
-        dto.setCliente(emprestimo.getCliente());
-        dto.setLivros(emprestimo.getLivros());
+        dto.setId_cliente(emprestimo.getCliente().getId_cliente());
+        dto.setLivrosIds(emprestimo.getLivros().stream()
+                .map(Livro::getId_livro)
+                .collect(Collectors.toList()));
         dto.setDataEmprestimo(emprestimo.getDataEmprestimo());
         dto.setDataDevolucaoPrevista(emprestimo.getDataDevolucaoPrevista());
         dto.setStatus(emprestimo.getStatus());
@@ -160,8 +144,8 @@ public EmprestimoDTO atualizarEmprestimo(Long id, EmprestimoDTO dto) {
                 .orElseThrow(() -> new RuntimeException("Empréstimo não encontrado com id: " + id));
 
         // Atualiza cliente se informado
-        if (dto.getCliente() != null && dto.getCliente().getId_cliente() != null) {
-            Cliente cliente = clienteRepository.findById(dto.getCliente().getId_cliente())
+        if (dto.getId_cliente() != null && dto.getId_cliente() != null) {
+            Cliente cliente = clienteRepository.findById(dto.getId_cliente())
                     .orElseThrow(() -> new RuntimeException("Cliente não encontrado com id: " + dto.getCliente().getId_cliente()));
             emprestimo.setCliente(cliente);
         }
@@ -185,18 +169,10 @@ public EmprestimoDTO atualizarEmprestimo(Long id, EmprestimoDTO dto) {
         }
 
         // Atualiza livros, se informado
-        if (dto.getLivros() != null && !dto.getLivros().isEmpty()) {
-            List<Livro> livros = dto.getLivros().stream()
-                    .map(l -> {
-                        try {
-                            return livroRepository.findById(l.getId_livro())
-                                    .orElseThrow(() -> new LivroNaoEncontradoException("Livro não encontrado com id: " + l.getId_livro()));
-                        } catch (LivroNaoEncontradoException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                        return l;
-                    })
+        if (dto.getLivrosIds() != null && !dto.getLivrosIds().isEmpty()) {
+            List<Livro> livros = dto.getLivrosIds().stream()
+                    .map(l -> livroRepository.findById(l)
+                            .orElseThrow(() -> new LivroNaoEncontradoException("Livro não encontrado com id: " + l)))
                     .collect(Collectors.toList());
 
             // Validar disponibilidade dos livros
@@ -235,4 +211,19 @@ public EmprestimoDTO deleteLogico(Long id) {
         throw e;
         }
     }
+
+    public EmprestimoDetalhadoDTO buscarEmprestimoDetalhadoPorId(Long id) {
+    Emprestimo emprestimo = emprestimoRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Empréstimo não encontrado com id: " + id));
+
+    EmprestimoDetalhadoDTO dto = new EmprestimoDetalhadoDTO();
+    dto.setId_emprestimo(emprestimo.getId_emprestimo());
+    dto.setDataEmprestimo(emprestimo.getDataEmprestimo());
+    dto.setDataDevolucaoPrevista(emprestimo.getDataDevolucaoPrevista());
+    dto.setDataDevolucaoReal(emprestimo.getDataDevolucaoReal());
+    dto.setStatus(emprestimo.getStatus());
+    dto.setCliente(emprestimo.getCliente());
+    dto.setLivros(emprestimo.getLivros());
+    return dto;
+}
 }

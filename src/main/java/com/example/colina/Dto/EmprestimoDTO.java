@@ -14,14 +14,11 @@ import java.util.List;
 @Data
 public class EmprestimoDTO {
     private Long id_emprestimo;
-
+    private Long id_cliente; // Apenas o ID do cliente
+    private List<Long> livrosIds = new ArrayList<>(); // Apenas os IDs dos livros
+    // Remova os campos cliente e livros
     private LocalDate dataEmprestimo;
     private LocalDate dataDevolucaoPrevista;
     private LocalDate dataDevolucaoReal;
     private StatusEmprestimo status;
-    @JsonProperty("cliente")
-    private Cliente cliente;
-    @JsonProperty("livros")
-    @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-    private List<Livro> livros = new ArrayList<>();
 }
