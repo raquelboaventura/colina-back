@@ -32,7 +32,4 @@ public class Livro {
     private int quantidade;
     @Column(columnDefinition = "boolean default true")
     private boolean status = true;
-    @ToString.Exclude
-    @ManyToMany(mappedBy = "livros")
-    private List<Emprestimo> emprestimos = new ArrayList<>();
 }

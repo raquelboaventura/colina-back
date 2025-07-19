@@ -142,4 +142,97 @@ public class EmprestimoService {
         dto.setStatus(emprestimo.getStatus());
         return dto;
     }
+
+    public EmprestimoDTO buscarEmprestimoPorId(Long id) {
+    try {
+        Emprestimo emprestimo = emprestimoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Empréstimo não encontrado com id: " + id));
+        return converterParaDTO(emprestimo);
+    } catch (Exception e) {
+        log.error("Erro ao buscar empréstimo: {}", e.getMessage());
+        throw e;
+    }
+}
+
+public EmprestimoDTO atualizarEmprestimo(Long id, EmprestimoDTO dto) {
+    try {
+        Emprestimo emprestimo = emprestimoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Empréstimo não encontrado com id: " + id));
+
+        // Atualiza cliente se informado
+        if (dto.getCliente() != null && dto.getCliente().getId_cliente() != null) {
+            Cliente cliente = clienteRepository.findById(dto.getCliente().getId_cliente())
+                    .orElseThrow(() -> new RuntimeException("Cliente não encontrado com id: " + dto.getCliente().getId_cliente()));
+            emprestimo.setCliente(cliente);
+        }
+
+        // Atualiza datas, se vierem no DTO
+        if (dto.getDataEmprestimo() != null) {
+            emprestimo.setDataEmprestimo(dto.getDataEmprestimo());
+        }
+
+        if (dto.getDataDevolucaoPrevista() != null) {
+            emprestimo.setDataDevolucaoPrevista(dto.getDataDevolucaoPrevista());
+        }
+
+        if (dto.getDataDevolucaoReal() != null) {
+            emprestimo.setDataDevolucaoReal(dto.getDataDevolucaoReal());
+        }
+
+        // Atualiza status, se informado
+        if (dto.getStatus() != null) {
+            emprestimo.setStatus(dto.getStatus());
+        }
+
+        // Atualiza livros, se informado
+        if (dto.getLivros() != null && !dto.getLivros().isEmpty()) {
+            List<Livro> livros = dto.getLivros().stream()
+                    .map(l -> {
+                        try {
+                            return livroRepository.findById(l.getId_livro())
+                                    .orElseThrow(() -> new LivroNaoEncontradoException("Livro não encontrado com id: " + l.getId_livro()));
+                        } catch (LivroNaoEncontradoException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        return l;
+                    })
+                    .collect(Collectors.toList());
+
+            // Validar disponibilidade dos livros
+            validarDisponibilidadeLivros(livros);
+
+            emprestimo.setLivros(livros);
+        }
+
+        // Validar limite do cliente caso cliente tenha sido alterado ou livros atualizados
+        validarLimiteEmprestimos(emprestimo.getCliente());
+
+        Emprestimo salvo = emprestimoRepository.save(emprestimo);
+        return converterParaDTO(salvo);
+
+    } catch (LivroIndisponivelException | LimiteEmprestimosExcedidoException e) {
+        log.error("Erro de negócio ao atualizar empréstimo: {}", e.getMessage());
+    } catch (Exception e) {
+        log.error("Erro ao atualizar empréstimo: {}", e.getMessage());
+        throw e;
+    }
+    return dto;
+}
+
+public EmprestimoDTO deleteLogico(Long id) {
+    try {
+        Emprestimo emprestimo = emprestimoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Empréstimo não encontrado com id: " + id));
+        
+        emprestimo.setStatus(StatusEmprestimo.CANCELADO); // Ou o status usado para delete lógico
+
+        Emprestimo salvo = emprestimoRepository.save(emprestimo);
+        return converterParaDTO(salvo);
+
+    } catch (Exception e) {
+        log.error("Erro ao realizar delete lógico no empréstimo: {}", e.getMessage());
+        throw e;
+        }
+    }
 }

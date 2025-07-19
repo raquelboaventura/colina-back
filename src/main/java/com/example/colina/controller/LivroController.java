@@ -22,7 +22,6 @@ public class LivroController {
     private LivroDTO livroDTO;
 
     @PostMapping("/cadastro")
-    @CrossOrigin(origins = "http://127.0.0.1:5500")
     @Transactional
     public ResponseEntity<LivroDTO> cadastraLivro(@RequestBody LivroDTO livroDTO){
         try{
@@ -107,5 +106,16 @@ public class LivroController {
         }
     }
 
-
+    @DeleteMapping("delete/{id}")
+    public void excluiLivroDefinitivo(@PathVariable Long id){
+        log.info("Entrando no controller de exclusão");
+        try{
+            log.info("Chamando serviço de exclusão");
+            livroService.excluiLivroDefinitivo(id);
+            log.info("Livro excluído com sucesso. Saindo do controller.");
+        }
+        catch(Exception ex){
+            log.error("Erro ao excluir livro: {} ", ex.getMessage());
+        }
+    }
 }

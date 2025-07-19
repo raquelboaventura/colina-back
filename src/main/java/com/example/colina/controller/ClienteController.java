@@ -1,21 +1,17 @@
 package com.example.colina.controller;
 
 import com.example.colina.Dto.ClienteDTO;
-import com.example.colina.Dto.LivroDTO;
 import com.example.colina.entity.Cliente;
 import com.example.colina.service.ClienteService;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-
-@Controller
+@RestController
 @RequestMapping("cliente")
 @Log4j2
 public class ClienteController {
@@ -87,4 +83,17 @@ public class ClienteController {
             return ResponseEntity.status(204).build(); // Nenhuma alteração necessária
         }
         }
+
+        @DeleteMapping("delete/{id}")
+    public void excluiLivroDefinitivo(@PathVariable Long id){
+        log.info("Entrando no controller de exclusão");
+        try{
+            log.info("Chamando serviço de exclusão");
+            clienteService.excluiLivroDefinitivo(id);
+            log.info("Livro excluído com sucesso. Saindo do controller.");
+        }
+        catch(Exception ex){
+            log.error("Erro ao excluir livro: {} ", ex.getMessage());
+        }
+    }
     }

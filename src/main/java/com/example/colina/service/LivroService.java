@@ -107,23 +107,23 @@ public class LivroService {
                     if (livroDTO.getGenero() != null) {
                         livroExistente.setGenero(livroDTO.getGenero());
                     }
-                    if (livroDTO.getQuantidade() != 0) {
+                    if (livroDTO.getQuantidade() > 0) {
                         livroExistente.setQuantidade(livroDTO.getQuantidade());
-                    }
-
-                    log.info("Livro DTO: {}", livroDTO);
-                    log.info("Livro atualizado, salvando no banco de dados...{}", livroExistente);
-                    livroRepository.save(livroExistente);
-                    return true;
-                } else {
-                    log.warn("O ISBN fornecido ({}) não corresponde ao livro encontrado ({}). Atualização cancelada.", livroDTO.getIsbn(), livroExistente.getIsbn());
-                    return false;
+                    } else if (livroDTO.getQuantidade() == 0) {
+                    livroExistente.setQuantidade(0);
+                    livroExistente.setStatus(false); // Inativa o livro
                 }
+                log.info("Livro DTO: {}", livroDTO);
+                log.info("Livro atualizado, salvando no banco de dados...{}", livroExistente);
+                livroRepository.save(livroExistente);
+                return true;
+            } else {
+                log.warn("O ISBN fornecido ({}) não corresponde ao livro encontrado ({}). Atualização cancelada.", livroDTO.getIsbn(), livroExistente.getIsbn());
+                return false;
             }
-            else{
-                    log.info(" o ID não existe: {}", id_existe);
-                }
-
+        } else {
+            log.info(" o ID não existe: {}", id_existe);
+        }
         } catch (Exception ex) {
             log.error(ex.getMessage());
             throw new RuntimeException(ex);
@@ -166,5 +166,13 @@ public class LivroService {
         }
     }
 
-
+    public void excluiLivroDefinitivo(Long id) {
+        log.info("Entrando no serviço de exclusão de livro");
+        try {
+            livroRepository.deleteById(id);
+            log.info("Livro excluído com sucesso");
+        } catch (Exception ex) {
+            log.error("Erro ao excluir: {} ", ex.getMessage());
+        }
+    }
 }

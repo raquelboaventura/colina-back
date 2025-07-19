@@ -120,6 +120,16 @@ public class ClienteService {
             throw ex;
         }
     }
+
+    public void excluiLivroDefinitivo(Long id) {
+         log.info("Entrando no serviço de exclusão de livro");
+        try {
+            clienteRepository.deleteById(id);
+            log.info("Cliente excluído com sucesso");
+        } catch (Exception ex) {
+            log.error("Erro ao excluir: {} ", ex.getMessage());
+        }
+    }
 }
 
 
